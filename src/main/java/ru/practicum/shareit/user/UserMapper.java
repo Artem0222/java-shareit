@@ -5,8 +5,11 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 @Component
 public class UserMapper {
+
     public UserDto toUserDto(User user) {
-        if (user == null) return null;
+        if (user == null) {
+            return null;
+        }
 
         UserDto dto = new UserDto();
         dto.setId(user.getId());
@@ -16,7 +19,9 @@ public class UserMapper {
     }
 
     public User toUser(UserDto dto) {
-        if (dto == null) return null;
+        if (dto == null) {
+            return null;
+        }
 
         User user = new User();
         user.setId(dto.getId());

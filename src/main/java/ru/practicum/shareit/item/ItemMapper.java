@@ -6,8 +6,11 @@ import ru.practicum.shareit.item.model.Item;
 
 @Component
 public class ItemMapper {
+
     public ItemDto toItemDto(Item item) {
-        if (item == null) return null;
+        if (item == null) {
+            return null;
+        }
 
         ItemDto dto = new ItemDto();
         dto.setId(item.getId());
@@ -18,7 +21,9 @@ public class ItemMapper {
     }
 
     public Item toItem(ItemDto dto) {
-        if (dto == null) return null;
+        if (dto == null) {
+            return null;
+        }
 
         Item item = new Item();
         item.setId(dto.getId());

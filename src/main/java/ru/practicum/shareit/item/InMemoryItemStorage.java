@@ -3,11 +3,7 @@ package ru.practicum.shareit.item;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -24,7 +20,7 @@ public class InMemoryItemStorage implements ItemStorage {
     @Override
     public List<Item> findAllByOwnerId(Long ownerId) {
         return items.values().stream()
-                .filter(item -> item.getOwner().getId().equals(ownerId))
+                .filter(item -> item.getOwner() != null && item.getOwner().getId().equals(ownerId))
                 .collect(Collectors.toList());
     }
 
