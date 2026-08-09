@@ -12,7 +12,7 @@ public class UserDto {
     @NotBlank(message = "Имя не должно быть пустым")
     private String name;
 
-    @NotBlank(message = "Е мейл не должен быть пустым")
+    @NotBlank(message = "мейл не должен быть пустым")
     @Email(message = "Неправильный формат е мейл")
     private String email;
 }
