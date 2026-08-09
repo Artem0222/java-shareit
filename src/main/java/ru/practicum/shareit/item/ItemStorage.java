@@ -9,7 +9,7 @@ public interface ItemStorage {
     List<Item> findAll();
 
     List<Item> findAllByOwnerId(Long ownerId);
-    
+
     Optional<Item> findById(Long id);
 
     Item save(Item item);
