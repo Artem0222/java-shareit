@@ -13,6 +13,6 @@ public interface ItemService {
 
     ItemDto update(Long itemId, Long ownerId, ItemDto itemDto);
 
-    List<ItemDto> seach(String text);
+    List<ItemDto> search(String text);
 
 }
