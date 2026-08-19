@@ -12,11 +12,11 @@ public class BookingDto {
     private Long id;
 
     @NotNull(message = "Дата начала не модкт быть пустой")
-    @Future(message = "Дата начала не доллдна быть в будущем")
+    @Future(message = "Дата начала доллдна быть в будущем")
     private LocalDateTime start;
 
     @NotNull(message = "Дата окончачиня не может быть пустой")
-    @Future(message = "Дата окончаниая не может быть в будущем")
+    @Future(message = "Дата окончаниая должна быть в будущем")
     private LocalDateTime end;
 
     private Long itemId;

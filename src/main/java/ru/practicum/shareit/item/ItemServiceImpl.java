@@ -139,14 +139,16 @@ public class ItemServiceImpl implements ItemService {
 
             bookings.stream()
                     .filter(b -> b.getEnd().isBefore(now))
-                    .findFirst()
-                    .ifPresent(b -> dto.setLastBooking(new BookingItemDto(b.getId(), b.getBooker().getId(), b.getStart(), b.getEnd()
+                    .max((b1, b2) -> b1.getEnd().compareTo(b2.getEnd()))
+                    .ifPresent(b -> dto.setLastBooking(new BookingItemDto(
+                            b.getId(), b.getBooker().getId(), b.getStart(), b.getEnd()
                     )));
 
             bookings.stream()
                     .filter(b -> b.getStart().isAfter(now))
-                    .reduce((first, second) -> second)
-                    .ifPresent(b -> dto.setNextBooking(new BookingItemDto(b.getId(), b.getBooker().getId(), b.getStart(), b.getEnd()
+                    .min((b1, b2) -> b1.getStart().compareTo(b2.getStart()))
+                    .ifPresent(b -> dto.setNextBooking(new BookingItemDto(
+                            b.getId(), b.getBooker().getId(), b.getStart(), b.getEnd()
                     )));
         }
         return dto;
