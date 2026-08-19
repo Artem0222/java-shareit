@@ -2,8 +2,10 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.exception.BadRequestException;
@@ -69,7 +71,7 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException("Бронирование с ид " + bookingId + " не найдено"));
 
         if (!booking.getItem().getOwner().getId().equals(ownerId)) {
-            throw new NotFoundException("Пользователь не являвется владельцем вещи");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Пользователь не являтся владельцем вещи");
         }
         if (booking.getStatus() != BookingStatus.WAITING) {
             throw new BadRequestException("Бронирование уже обработано");
