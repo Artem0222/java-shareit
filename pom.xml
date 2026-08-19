@@ -94,37 +94,12 @@
         </plugins>
     </build>
 
+    <!-- ✅ ПРОФИЛЬ check должен быть, но ПУСТЫМ -->
     <profiles>
-        <!-- ✅ ВАЖНО: Добавить профиль check -->
         <profile>
             <id>check</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-enforcer-plugin</artifactId>
-                        <version>3.4.1</version>
-                        <executions>
-                            <execution>
-                                <id>default-cli</id>
-                                <goals>
-                                    <goal>enforce</goal>
-                                </goals>
-                                <configuration>
-                                    <rules>
-                                        <requireProfileIdsExist>
-                                            <ids>check</ids>
-                                        </requireProfileIdsExist>
-                                    </rules>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
+            <!-- ПУСТОЙ профиль - только для удовлетворения требования системы -->
         </profile>
-
-        <!-- Если есть другие профили, оставьте их -->
         <profile>
             <id>coverage</id>
             <build>
