@@ -55,8 +55,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public ItemDto create(Long ownerId, ItemDto itemDto) {
         User owner = userRepository.findById(ownerId)
-                .orElseThrow(() -> new NotFoundException
-                        ("Пользователь с ид " + ownerId + " не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь с ид " + ownerId + " не найден"));
 
         Item item = itemMapper.toItem(itemDto);
         item.setOwner(owner);
@@ -76,7 +75,7 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new NotFoundException("Вещь с ид " + itemId + " не найдена"));
 
         if (!existingItem.getOwner().getId().equals(ownerId)) {
-            throw new IllegalArgumentException("Пользователь с ид " + ownerId + " не является владельцем вещи");
+            throw new IllegalArgumentException("Пользоватедль с ид " + ownerId + " не является владельцем вещи");
         }
 
         if (itemDto.getName() != null) {
@@ -107,19 +106,15 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public CommentDto addComment(Long itemId, Long userId, CommentDto commentDto) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException
-                        ("Вещь с ид " + itemId + " не найдена"));
+                .orElseThrow(() -> new NotFoundException("Вещь с ид " + itemId + " не найдена"));
 
         User author = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException
-                        ("Пользователь с ид " + userId + " не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь с ид " + userId + " не найден"));
 
-        boolean hasBooked = bookingRepository.existsByItemIdAndBookerIdAndEndBeforeAndStatus(itemId, userId, LocalDateTime.now()
-        );
+        boolean hasBooked = bookingRepository.existsByItemIdAndBookerIdAndEndBeforeAndStatus(itemId, userId, LocalDateTime.now());
 
         if (!hasBooked) {
-            throw new BadRequestException
-                    ("Пользователь не брал эту вещь в аренду или срок аренды не завершен");
+            throw new BadRequestException("Пользователь не брал эту вещь в аренду или срок аренды не завершен");
 
         }
         Comment comment = commentMapper.toComment(commentDto);
@@ -140,21 +135,18 @@ public class ItemServiceImpl implements ItemService {
         if (item.getOwner().getId().equals(userId)) {
             LocalDateTime now = LocalDateTime.now();
 
-            List<Booking> bookings = bookingRepository.
-                    findApprovedByItemIdOrderByStartDesc(item.getId());
+            List<Booking> bookings = bookingRepository.findApprovedByItemIdOrderByStartDesc(item.getId());
 
             bookings.stream()
                     .filter(b -> b.getEnd().isBefore(now))
                     .findFirst()
-                    .ifPresent(b -> dto.setLastBooking
-                            (new BookingItemDto(b.getId(), b.getBooker().getId(), b.getStart(), b.getEnd()
-                            )));
+                    .ifPresent(b -> dto.setLastBooking(new BookingItemDto(b.getId(), b.getBooker().getId(), b.getStart(), b.getEnd()
+                    )));
 
             bookings.stream()
                     .filter(b -> b.getStart().isAfter(now))
-                    .reduce((first, second) -> second) // последнее в списке будущих
-                    .ifPresent(b -> dto.setNextBooking(new BookingItemDto(
-                            b.getId(), b.getBooker().getId(), b.getStart(), b.getEnd()
+                    .reduce((first, second) -> second)
+                    .ifPresent(b -> dto.setNextBooking(new BookingItemDto(b.getId(), b.getBooker().getId(), b.getStart(), b.getEnd()
                     )));
         }
         return dto;
