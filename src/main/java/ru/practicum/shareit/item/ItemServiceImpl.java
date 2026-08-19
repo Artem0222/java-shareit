@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingItemDto;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.exception.BadRequestException;
@@ -20,6 +21,7 @@ import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,8 +41,24 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("Пользователь с ид " + ownerId + " не найден");
         }
         List<Item> items = itemRepository.findByOwnerId(ownerId);
+        if (items.isEmpty()) {
+            return List.of();
+        }
+        List<Long> itemIds = items.stream()
+                .map(Item::getId)
+                .collect(Collectors.toList());
+
+        List<Comment> allComments = commentRepository.findByItemIdIn(itemIds);
+        Map<Long, List<Comment>> commentsByItemId = allComments.stream()
+                .collect(Collectors.groupingBy(comment -> comment.getItem().getId()));
+
+        List<Booking> allBookings = bookingRepository.findByItemIdInAndStatus(itemIds, BookingStatus.APPROVED);
+        Map<Long, List<Booking>> bookingsByItemId = allBookings.stream()
+                .collect(Collectors.groupingBy(booking -> booking.getItem().getId()));
+
         return items.stream()
-                .map(item -> enrichItemWithBookingsAndComments(item, ownerId))
+                .map(item -> enrichItemWithBookingsAndCommentsOptimized(
+                        item, ownerId, commentsByItemId, bookingsByItemId))
                 .collect(Collectors.toList());
     }
 
@@ -50,6 +68,45 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new NotFoundException("Вещь с ид " + id + " не найдена"));
         return enrichItemWithBookingsAndComments(item, userId);
     }
+
+    private ItemWithBookingsDto enrichItemWithBookingsAndCommentsOptimized(
+            Item item,
+            Long userId,
+            Map<Long, List<Comment>> commentsByItemId,
+            Map<Long, List<Booking>> bookingsByItemId) {
+
+        ItemWithBookingsDto dto = itemMapper.toItemWithBookingsDto(item);
+
+        List<Comment> comments = commentsByItemId.getOrDefault(item.getId(), List.of());
+        dto.setComments(commentMapper.toCommentDtoList(comments));
+
+        if (item.getOwner().getId().equals(userId)) {
+            LocalDateTime now = LocalDateTime.now();
+            List<Booking> bookings = bookingsByItemId.getOrDefault(item.getId(), List.of());
+
+            bookings.stream()
+                    .filter(b -> b.getEnd().isBefore(now))
+                    .max((b1, b2) -> b1.getEnd().compareTo(b2.getEnd()))
+                    .ifPresent(b -> dto.setLastBooking(new BookingItemDto(
+                            b.getId(),
+                            b.getBooker().getId(),
+                            b.getStart(),
+                            b.getEnd()
+                    )));
+
+            bookings.stream()
+                    .filter(b -> b.getStart().isAfter(now))
+                    .min((b1, b2) -> b1.getStart().compareTo(b2.getStart()))
+                    .ifPresent(b -> dto.setNextBooking(new BookingItemDto(
+                            b.getId(),
+                            b.getBooker().getId(),
+                            b.getStart(),
+                            b.getEnd()
+                    )));
+        }
+        return dto;
+    }
+
 
     @Override
     @Transactional
@@ -75,7 +132,7 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new NotFoundException("Вещь с ид " + itemId + " не найдена"));
 
         if (!existingItem.getOwner().getId().equals(ownerId)) {
-            throw new IllegalArgumentException("Пользоватедль с ид " + ownerId + " не является владельцем вещи");
+            throw new NotFoundException("Пользоватедль с ид " + ownerId + " не является владельцем вещи");
         }
 
         if (itemDto.getName() != null) {
@@ -134,23 +191,29 @@ public class ItemServiceImpl implements ItemService {
 
         if (item.getOwner().getId().equals(userId)) {
             LocalDateTime now = LocalDateTime.now();
-
             List<Booking> bookings = bookingRepository.findApprovedByItemIdOrderByStartDesc(item.getId());
 
             bookings.stream()
                     .filter(b -> b.getEnd().isBefore(now))
                     .max((b1, b2) -> b1.getEnd().compareTo(b2.getEnd()))
                     .ifPresent(b -> dto.setLastBooking(new BookingItemDto(
-                            b.getId(), b.getBooker().getId(), b.getStart(), b.getEnd()
+                            b.getId(),
+                            b.getBooker().getId(),
+                            b.getStart(),
+                            b.getEnd()
                     )));
 
             bookings.stream()
                     .filter(b -> b.getStart().isAfter(now))
                     .min((b1, b2) -> b1.getStart().compareTo(b2.getStart()))
                     .ifPresent(b -> dto.setNextBooking(new BookingItemDto(
-                            b.getId(), b.getBooker().getId(), b.getStart(), b.getEnd()
+                            b.getId(),
+                            b.getBooker().getId(),
+                            b.getStart(),
+                            b.getEnd()
                     )));
         }
+
         return dto;
     }
 }
