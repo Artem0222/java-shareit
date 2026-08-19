@@ -24,7 +24,10 @@ public class ItemController {
     @GetMapping("/{itemId}")
     public ItemWithBookingsDto findById(
             @PathVariable Long itemId,
-            @RequestHeader("X-Share-User-Id") Long userId) {
+            @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("Заголовок X-Sharer-User-Id обязателен");
+        }
         return itemService.findById(itemId, userId);
     }
 

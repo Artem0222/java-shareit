@@ -8,6 +8,8 @@ import ru.practicum.shareit.booking.BookingStatus;
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class BookingResponseDto {
     private Long id;
     private LocalDateTime start;
@@ -17,16 +19,16 @@ public class BookingResponseDto {
     private UserInfo booker;
 
     @Data
-    @AllArgsConstructor
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class ItemInfo {
         private Long id;
         private String name;
     }
 
     @Data
-    @AllArgsConstructor
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class UserInfo {
         private Long id;
     }

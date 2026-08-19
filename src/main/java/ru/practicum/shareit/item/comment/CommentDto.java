@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class CommentDto {
     private Long id;
 
-    @NotBlank(message = "Комментаррий не может быть пустым")
+    @NotBlank(message = "Комментарий не может быть пустым")
     private String text;
 
     private String authorName;
