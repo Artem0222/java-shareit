@@ -52,4 +52,11 @@ public class ErrorHandler {
         log.error("Непредвиденная ошибкаЖ {}", e.getMessage(), e);
         return Map.of("error", e.getMessage());
     }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleBadRequest(BadRequestException e) {
+        log.warn("Ошибка запроса {}", e.getMessage());
+        return Map.of("error", e.getMessage());
+    }
 }
