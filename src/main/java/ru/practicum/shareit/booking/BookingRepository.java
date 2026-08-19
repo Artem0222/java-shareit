@@ -4,7 +4,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import ru.practicum.shareit.booking.Booking;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -90,7 +89,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "AND b.booker.id = :bookerId " +
             "AND b.end < :now " +
             "AND b.status = 'APPROVED'")
-
     boolean existsByItemIdAndBookerIdAndEndBeforeAndStatus(
             @Param("itemId") Long itemId,
             @Param("bookerId") Long bookerId,
