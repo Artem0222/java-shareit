@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -20,7 +19,7 @@ public class ErrorHandler {
         log.warn("Ошибка валидации: {}", ex.getMessage());
         String errorMessage = ex.getBindingResult().getFieldErrors().stream()
                 .findFirst()
-                .map(error-> error.getDefaultMessage())
+                .map(error -> error.getDefaultMessage())
                 .orElse("Ошибка валдиации");
 
         return Map.of("error", errorMessage);
