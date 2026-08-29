@@ -117,8 +117,12 @@ class ItemRequestServiceTest {
 
     @Test
     void findAllOtherRequests_shouldThrowBadRequestException_whenInvalidPagination() {
-        assertThrows(BadRequestException.class, () -> requestService.findAllOtherRequests(1L, -1, 20));
-        assertThrows(BadRequestException.class, () -> requestService.findAllOtherRequests(1L, 0, -5));
+        when(userRepository.existsById(1L)).thenReturn(true);
+
+        assertThrows(BadRequestException.class,
+                () -> requestService.findAllOtherRequests(1L, -1, 20));
+        assertThrows(BadRequestException.class,
+                () -> requestService.findAllOtherRequests(1L, 0, -5));
     }
 
     @Test
