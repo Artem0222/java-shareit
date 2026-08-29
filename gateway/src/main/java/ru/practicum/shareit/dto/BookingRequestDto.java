@@ -3,12 +3,11 @@ package ru.practicum.shareit.dto;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
 @Data
 public class BookingRequestDto {
-    @NotNull(message = "Ид вещи обязателен")
+    @NotNull(message = "Id вещи обязателен")
     private Long itemId;
 
     @NotNull(message = "Дата начала не может быть пустой")

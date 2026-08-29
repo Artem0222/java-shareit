@@ -6,10 +6,8 @@ import ru.practicum.shareit.booking.dto.BookingResponseDto;
 
 @Component
 public class BookingMapper {
-
     public Booking toBooking(BookingRequestDto dto) {
         if (dto == null) return null;
-
         Booking booking = new Booking();
         booking.setStart(dto.getStart());
         booking.setEnd(dto.getEnd());
@@ -26,16 +24,16 @@ public class BookingMapper {
         dto.setStatus(booking.getStatus());
 
         if (booking.getItem() != null) {
-            dto.setItem(new BookingResponseDto.ItemInfo(
-                    booking.getItem().getId(),
-                    booking.getItem().getName()
-            ));
+            BookingResponseDto.ItemInfo itemInfo = new BookingResponseDto.ItemInfo();
+            itemInfo.setId(booking.getItem().getId());
+            itemInfo.setName(booking.getItem().getName());
+            dto.setItem(itemInfo);
         }
 
         if (booking.getBooker() != null) {
-            dto.setBooker(new BookingResponseDto.UserInfo(
-                    booking.getBooker().getId()
-            ));
+            BookingResponseDto.UserInfo userInfo = new BookingResponseDto.UserInfo();
+            userInfo.setId(booking.getBooker().getId());
+            dto.setBooker(userInfo);
         }
 
         return dto;

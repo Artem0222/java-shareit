@@ -1,16 +1,13 @@
 package ru.practicum.shareit.item.comment;
 
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class CommentMapper {
-
     public Comment toComment(CommentDto dto) {
         if (dto == null) return null;
-
         Comment comment = new Comment();
         comment.setText(dto.getText());
         return comment;
